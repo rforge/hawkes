@@ -2,6 +2,7 @@ Package: Hawkes
 Version: 0.0-1
 Date: 2011-01-07
 Title: Hawkes
+Authors@R: c(person("Riadh", "Zaatour", role = c("aut", "cre"),email = "zaatour.riadh@gmail.com"))
 Author: Riadh Zaatour <zaatour.riadh@gmail.com>
 Maintainer: Riadh Zaatour <zaatour.riadh@gmail.com>
 Description: Hawkes process toolkit

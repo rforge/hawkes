@@ -122,6 +122,7 @@ SEXP  dn_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 	double *lbeta = REAL(coerceVector(Beta,REALSXP));
 	double T = REAL(coerceVector(TT,REALSXP))[0];
 	int dimension = length(Lambda_0);
+	
 	double **alpha = (double **) R_alloc(dimension, sizeof(double*));
 	double **beta = (double **) R_alloc(dimension, sizeof(double*));
 	for(int i=0;i<dimension;i++)
@@ -134,7 +135,6 @@ SEXP  dn_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 			beta[i][j] = lbeta[i*dimension+j];
 		}
 	}
-
 
 	GetRNGstate();
 	SEXP block;
@@ -157,6 +157,7 @@ SEXP  dn_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 	//first event
 	double U = unif_rand();
 	double s = -(1.0 / lambda_star) * log(U);
+	
 	if (s <= T)
 	{
 		double D = unif_rand();
@@ -177,25 +178,22 @@ SEXP  dn_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 			{
 				xres[i] = REAL(CAR(VECTOR_ELT(rootHistory,i)))[0];
 				SET_VECTOR_ELT(rootHistory,i,CDR(VECTOR_ELT(rootHistory,i)));
-
 			}
 		}
-		UNPROTECT(2);
+		UNPROTECT(3);
 		return res;
 	}
 	//general routine
 	while (1)
 	{
-		//	REAL(CAR(tailHistory))[0]=s;
-		//	tailHistory = SETCDR(tailHistory, list1(allocVector(REALSXP, 1)));
-
 		lambda_star = 0;
 		for (int i = 0; i < dimension; i++)
-		{//dn_getLambda(double t, int index,int dimension,double *lambda_0,double **alpha,double **beta,SEXP history)
+		{
 			lambda_star = lambda_star + dn_getLambda(s, i,dimension,lambda_0,alpha,beta,rootHistory);
 		}
 		U = unif_rand();
 		s = s - (1.0 / lambda_star) * log(U);
+			
 		if (s <= T)
 		{
 			double D = unif_rand();
@@ -214,20 +212,21 @@ SEXP  dn_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 		else
 		{
 			PutRNGstate();
+	
 		SEXP res = PROTECT(allocVector(VECSXP,dimension));
 		for(int i=0;i<dimension;i++)
 		{
 			int n = length(VECTOR_ELT(rootHistory,i));
 			SET_VECTOR_ELT(res,i,allocVector(REALSXP,n-1));
 			double *xres=REAL(VECTOR_ELT(res,i));
-			for(int i=0;i<n-1;i++)
+			for(int j=0;j<n-1;j++)
 			{
-				xres[i] = REAL(CAR(VECTOR_ELT(rootHistory,i)))[0];
+				xres[j] = REAL(CAR(VECTOR_ELT(rootHistory,i)))[0];
 				SET_VECTOR_ELT(rootHistory,i,CDR(VECTOR_ELT(rootHistory,i)));
 
 			}
 		}
-		UNPROTECT(2);
+		UNPROTECT(3);
 		return res;
 		}
 	}

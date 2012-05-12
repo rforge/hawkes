@@ -24,7 +24,7 @@ SEXP d1_Simulate(SEXP Lambda_0,SEXP Alpha,SEXP Beta,SEXP TT)
 	double beta = REAL(coerceVector(Beta,REALSXP))[0];
 	double T = REAL(coerceVector(TT,REALSXP))[0];
 
-	GetRNGstate();
+	GetRNGstate(); 
 	SEXP block;
 	SEXP rootHistory = PROTECT(list1(allocVector(REALSXP, 1)));
 	SEXP tailHistory = rootHistory;
