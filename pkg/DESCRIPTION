@@ -1,0 +1,10 @@
+Package: Hawkes
+Version: 0.0-1
+Date: 2011-01-07
+Title: Hawkes
+Author: Riadh Zaatour <zaatour.riadh@gmail.com>
+Maintainer: Riadh Zaatour <zaatour.riadh@gmail.com>
+Description: Hawkes process toolkit
+License: GPL (>= 2)
+Depends: R (>= 2.13)
+
