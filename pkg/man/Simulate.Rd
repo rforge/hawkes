@@ -2,7 +2,7 @@
 \alias{Simulate}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-%%  ~~function to do ... ~~
+The function simulates a Hawkes process in a one or multi dimensional setting.
 }
 \description{
 %%  ~~ A concise (1-5 lines) description of what the function does. ~~

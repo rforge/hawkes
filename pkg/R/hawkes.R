@@ -1,8 +1,8 @@
 Simulate <- function(dim,lambda0,alpha,beta,T)
 {
-	if (dim < 1)
+	if(!is.integer(dim) || (dim < 1))
 	{
-		cat("Make sure the dimension is a positive integer.\n")
+	  stop("'dim' must be a strictly positive integer")
 	}
 	if(dim==1)
 	{
