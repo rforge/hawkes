@@ -1,0 +1,5 @@
+## package has a dynamic library
+useDynLib(Hawkes)
+
+## and some exported functions
+export(Simulate)
