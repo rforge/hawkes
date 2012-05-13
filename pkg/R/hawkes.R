@@ -1,15 +1,3 @@
-
-.First.lib <- function(libname, pkgname)
-{
-	library.dynam("Hawkes")
-   
-    cat("Hawkes process simulation and calibration toolkit.\n")
-   
-
-
-}
-
-
 Simulate <- function(dim,lambda0,alpha,beta,T)
 {
 	if (dim < 1)
