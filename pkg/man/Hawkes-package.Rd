@@ -4,11 +4,11 @@
 \docType{package}
 \title{
 Hawkes
-~~ package title ~~
+%%~~ package title ~~
 }
 \description{
 Hawkes process toolkit
-~~ A concise (1-5 lines) description of the package ~~
+%%~~ A concise (1-5 lines) description of the package ~~
 }
 \details{
 \tabular{ll}{
@@ -20,25 +20,25 @@ License: \tab GPL (>= 2)\cr
 Depends: \tab R (>= 2.13)\cr
 Built: \tab R 2.14.1; x86_64-pc-linux-gnu; 2012-05-12 22:31:02 UTC; unix\cr
 }
-~~ An overview of how to use the package, including the most important ~~
-~~ functions ~~
+%%~~ An overview of how to use the package, including the most important ~~
+%%~~ functions ~~
 }
 \author{
 Riadh Zaatour <zaatour.riadh@gmail.com>
 
 Maintainer: Riadh Zaatour <zaatour.riadh@gmail.com>
-~~ The author and/or maintainer of the package ~~
+%%~~ The author and/or maintainer of the package ~~
 }
 \references{
-~~ Literature or other references for background information ~~
+%%~~ Literature or other references for background information ~~
 }
-~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
-~~ the R documentation directory ~~
+%%~~ Optionally other standard keywords, one per line, from file KEYWORDS in ~~
+%%~~ the R documentation directory ~~
 \keyword{ package }
 \seealso{
-~~ Optional links to other man pages, e.g. ~~
-~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
+%%~~ Optional links to other man pages, e.g. ~~
+%%~~ \code{\link[<pkg>:<pkg>-package]{<pkg>}} ~~
 }
 \examples{
-~~ simple examples of the most important functions ~~
+%%~~ simple examples of the most important functions ~~
 }
