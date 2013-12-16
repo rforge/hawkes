@@ -1,11 +1,12 @@
-Package: Hawkes
+Package: hawkes
 Version: 0.0-1
 Date: 2011-01-07
-Title: Hawkes
-Authors@R: c(person("Riadh", "Zaatour", role = c("aut", "cre"),email = "zaatour.riadh@gmail.com"))
-Author: Riadh Zaatour <zaatour.riadh@gmail.com>
-Maintainer: Riadh Zaatour <zaatour.riadh@gmail.com>
+Title: hawkes
+Authors@R: c(person("Riadh", "Zaatour", role = c("aut", "cre"),email = "zaatour_riadh@yahoo.fr"))
+Author: Riadh Zaatour <zaatour_riadh@yahoo.fr>
+Maintainer: Riadh Zaatour <zaatour_riadh@yahoo.fr>
 Description: Hawkes process toolkit
 License: GPL (>= 2)
-Depends: R (>= 2.13)
+Depends: Rcpp (>= 0.10.6), RcppArmadillo (>= 0.3.920.3)
+LinkingTo: Rcpp, RcppArmadillo
 
