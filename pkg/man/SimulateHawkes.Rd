@@ -46,11 +46,11 @@ On Lewis simulation method for point processes.
 %% ~~objects to See Also as \code{\link{help}}, ~~~
 }
 \examples{
-lambda0<-0.02
-alpha<-0.05
-beta<-0.06
+lambda0<-c(0.02,0.02)
+alpha<-matrix(c(0.05,0,0,0.05),byrow=TRUE,nrow=2)
+beta<-c(0.06,0.06)
 horizon<-3600#one hour
-h<-SimulateHawkes(lambda0,alpha,beta,horizon)
+result = h<-SimulateHawkes(lambda0,alpha,beta,horizon)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ hawkes }
