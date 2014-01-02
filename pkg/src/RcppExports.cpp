@@ -6,26 +6,8 @@
 
 using namespace Rcpp;
 
-// Attribute
-int Attribute(double alea, double t, double I_star, const arma::vec& m_lambda);
-RcppExport SEXP hawkes_Attribute(SEXP aleaSEXP, SEXP tSEXP, SEXP I_starSEXP, SEXP m_lambdaSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< double >::type alea(aleaSEXP );
-        Rcpp::traits::input_parameter< double >::type t(tSEXP );
-        Rcpp::traits::input_parameter< double >::type I_star(I_starSEXP );
-        Rcpp::traits::input_parameter< const arma::vec& >::type m_lambda(m_lambdaSEXP );
-        int __result = Attribute(alea, t, I_star, m_lambda);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
 // SimulateHawkes
-std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0, arma::mat& a_alpha, arma::mat& a_beta, double horizon);
+std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0, arma::mat& a_alpha, arma::vec& a_beta, double horizon);
 RcppExport SEXP hawkes_SimulateHawkes(SEXP a_lambda0SEXP, SEXP a_alphaSEXP, SEXP a_betaSEXP, SEXP horizonSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
@@ -33,24 +15,9 @@ BEGIN_RCPP
         Rcpp::RNGScope __rngScope;
         Rcpp::traits::input_parameter< arma::vec& >::type a_lambda0(a_lambda0SEXP );
         Rcpp::traits::input_parameter< arma::mat& >::type a_alpha(a_alphaSEXP );
-        Rcpp::traits::input_parameter< arma::mat& >::type a_beta(a_betaSEXP );
+        Rcpp::traits::input_parameter< arma::vec& >::type a_beta(a_betaSEXP );
         Rcpp::traits::input_parameter< double >::type horizon(horizonSEXP );
         std::vector<std::vector<double> > __result = SimulateHawkes(a_lambda0, a_alpha, a_beta, horizon);
-        PROTECT(__sexp_result = Rcpp::wrap(__result));
-    }
-    UNPROTECT(1);
-    return __sexp_result;
-END_RCPP
-}
-// essai
-NumericVector essai(SEXP a);
-RcppExport SEXP hawkes_essai(SEXP aSEXP) {
-BEGIN_RCPP
-    SEXP __sexp_result;
-    {
-        Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< SEXP >::type a(aSEXP );
-        NumericVector __result = essai(a);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

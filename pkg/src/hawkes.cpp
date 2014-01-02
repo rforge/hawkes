@@ -4,7 +4,7 @@ using namespace Rcpp;
 
 
 
-// [[Rcpp::export]]
+
 int Attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 {
   int index = 0;
@@ -18,7 +18,7 @@ int Attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 }
 
 // [[Rcpp::export]]
-std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat& a_alpha,arma::mat& a_beta,double horizon)
+std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat& a_alpha,arma::vec& a_beta,double horizon)
 {
   
   int m_dimension = a_alpha.n_rows;
@@ -32,7 +32,7 @@ std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat&
   arma::mat dlambda(m_dimension,m_dimension);
   arma::vec m_lambda0(a_lambda0);
   arma::mat m_alpha(a_alpha);
-  arma::mat m_beta(a_beta);
+  arma::vec m_beta(a_beta);
   arma::vec m_lambda(m_dimension);
 	double lambda_star = 0.0;
 	
@@ -84,7 +84,7 @@ std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat&
 				double dl = 0.0;
 				for (int j = 0; j < m_dimension; j++)
 				{
-					dl += dlambda(i,j)*exp(-m_beta(i,i)*(s-t));//YES, LE BETA EST DIAGONAL, DONC LE COUPLAGE VIENT JUSTE DES ALPHA
+					dl += dlambda(i,j)*exp(-m_beta(i)*(s-t));
 				}
 				m_lambda[i] = m_lambda0[i]+dl;
 				I_M = I_M + m_lambda[i];
@@ -99,7 +99,7 @@ std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat&
 					double dl=0.0;
 					for (int j = 0; j < m_dimension; j++)
 					{
-						dlambda(i,j) = dlambda(i,j)*exp(-m_beta(i,i)*(s-t));//YES, LE BETA EST DIAGONAL, DONC LE COUPLAGE VIENT JUSTE DES ALPHA
+						dlambda(i,j) = dlambda(i,j)*exp(-m_beta(i)*(s-t));
 						if (n0==j)
 						{
 							dlambda(i,n0) += m_alpha(i,n0);
@@ -123,13 +123,7 @@ std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat&
 	}
 }
 
-// [[Rcpp::export]]
-NumericVector essai(SEXP a) {
-  NumericMatrix Xr(a);                 // creates Rcpp matrix from SEXP
-  int n = Xr.nrow(), k = Xr.ncol();
-  arma::mat X(Xr.begin(), n, k, false);
-  return Xr;  
-}
+
 
 /*
 library(Rcpp)
