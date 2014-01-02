@@ -21,7 +21,7 @@ int Attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0,arma::mat& a_alpha,arma::vec& a_beta,double horizon)
 {
   
-  int m_dimension = a_alpha.n_rows;
+  int m_dimension = a_alpha.n_elem;
   std::vector<std::vector<double> > m_history;
   for (int i=0;i<m_dimension;i++)
   {
