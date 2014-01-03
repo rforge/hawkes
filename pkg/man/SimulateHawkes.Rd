@@ -50,7 +50,7 @@ lambda0<-c(0.02,0.02)
 alpha<-matrix(c(0.05,0,0,0.05),byrow=TRUE,nrow=2)
 beta<-c(0.06,0.06)
 horizon<-3600#one hour
-result = h<-SimulateHawkes(lambda0,alpha,beta,horizon)
+h<-SimulateHawkes(lambda0,alpha,beta,horizon)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
 \keyword{ hawkes }
