@@ -53,5 +53,5 @@ horizon<-3600#one hour
 h<-SimulateHawkes(lambda0,alpha,beta,horizon)
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.
-\keyword{ hawkes }
-\keyword{ simulation }
+%\keyword{ hawkes }
+%\keyword{ simulation }
