@@ -7,17 +7,17 @@
 using namespace Rcpp;
 
 // SimulateHawkes
-std::vector<std::vector<double> > SimulateHawkes(arma::vec& a_lambda0, arma::mat& a_alpha, arma::vec& a_beta, double horizon);
-RcppExport SEXP hawkes_SimulateHawkes(SEXP a_lambda0SEXP, SEXP a_alphaSEXP, SEXP a_betaSEXP, SEXP horizonSEXP) {
+std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0, SEXP alpha, SEXP beta, SEXP horizon);
+RcppExport SEXP hawkes_SimulateHawkes(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP horizonSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
         Rcpp::RNGScope __rngScope;
-        Rcpp::traits::input_parameter< arma::vec& >::type a_lambda0(a_lambda0SEXP );
-        Rcpp::traits::input_parameter< arma::mat& >::type a_alpha(a_alphaSEXP );
-        Rcpp::traits::input_parameter< arma::vec& >::type a_beta(a_betaSEXP );
-        Rcpp::traits::input_parameter< double >::type horizon(horizonSEXP );
-        std::vector<std::vector<double> > __result = SimulateHawkes(a_lambda0, a_alpha, a_beta, horizon);
+        Rcpp::traits::input_parameter< SEXP >::type lambda0(lambda0SEXP );
+        Rcpp::traits::input_parameter< SEXP >::type alpha(alphaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type horizon(horizonSEXP );
+        std::vector<std::vector<double> > __result = SimulateHawkes(lambda0, alpha, beta, horizon);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);
