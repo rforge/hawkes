@@ -35,6 +35,9 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     double m_lambda0 = as<double>(lambda0);
     double m_alpha = as<double>(alpha);
     double m_beta = as<double>(beta);
+    if(m_beta<m_alpha){
+      stop("Unstable. You must have alpha < beta");
+    }
     
     double lambda_star = m_lambda0;
 	  double dlambda = 0.0,t=0;
@@ -79,7 +82,16 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     arma::vec m_lambda0(lambda0_internal.begin(),dimension,false);
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
+    arma::mat m_beta_matrix = diagmat(m_beta);
     arma::vec m_lambda(dimension);
+    
+    
+    /*arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
+    arma::cx_vec eigval=arma::eig_gen(beta_minus_alpha);
+    arma::vec eigval_real=real(eigval);
+    if(eigval_real.min()<0){
+      stop("Unstable. beta - alpha must have eigenvalues with strictly positive real part.");
+    }*/
   	double lambda_star = 0.0;
   	
   	double t=0;

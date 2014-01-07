@@ -13,8 +13,8 @@ SimulateHawkes(lambda0, alpha, beta, horizon)
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{lambda0}{Vector of initial intensity, a scalar in the monovariate case.}
-  \item{alpha}{Matrix of excitation, a scalar in the monovariate case.}
-  \item{beta}{Vector of betas, a scalar in the monovariate case.}
+  \item{alpha}{Matrix of excitation, a scalar in the monovariate case. Excitation values are all positive.}
+  \item{beta}{Vector of betas, a scalar in the monovariate case. Notice that in the scalar case, one must have beta>alpha for the process to be stable, and in the multivariate case, the matrix (diag(beta)-alpha) must have eigen values with strictly positive real parts for the process to be stable.}
   \item{horizon}{Time horizon until which the simulation is to be conducted.}
 }
 \details{
