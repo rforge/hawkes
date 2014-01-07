@@ -6,9 +6,9 @@
 
 using namespace Rcpp;
 
-// SimulateHawkes
-std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0, SEXP alpha, SEXP beta, SEXP horizon);
-RcppExport SEXP hawkes_SimulateHawkes(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP horizonSEXP) {
+// simulateHawkes
+std::vector<std::vector<double> > simulateHawkes(SEXP lambda0, SEXP alpha, SEXP beta, SEXP horizon);
+RcppExport SEXP hawkes_simulateHawkes(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP horizonSEXP) {
 BEGIN_RCPP
     SEXP __sexp_result;
     {
@@ -17,7 +17,62 @@ BEGIN_RCPP
         Rcpp::traits::input_parameter< SEXP >::type alpha(alphaSEXP );
         Rcpp::traits::input_parameter< SEXP >::type beta(betaSEXP );
         Rcpp::traits::input_parameter< SEXP >::type horizon(horizonSEXP );
-        std::vector<std::vector<double> > __result = SimulateHawkes(lambda0, alpha, beta, horizon);
+        std::vector<std::vector<double> > __result = simulateHawkes(lambda0, alpha, beta, horizon);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// jumpMean
+std::vector<double> jumpMean(SEXP lambda0, SEXP alpha, SEXP beta, SEXP tau);
+RcppExport SEXP hawkes_jumpMean(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type lambda0(lambda0SEXP );
+        Rcpp::traits::input_parameter< SEXP >::type alpha(alphaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type tau(tauSEXP );
+        std::vector<double> __result = jumpMean(lambda0, alpha, beta, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// jumpVariance
+arma::mat jumpVariance(SEXP lambda0, SEXP alpha, SEXP beta, SEXP tau);
+RcppExport SEXP hawkes_jumpVariance(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP tauSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type lambda0(lambda0SEXP );
+        Rcpp::traits::input_parameter< SEXP >::type alpha(alphaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type tau(tauSEXP );
+        arma::mat __result = jumpVariance(lambda0, alpha, beta, tau);
+        PROTECT(__sexp_result = Rcpp::wrap(__result));
+    }
+    UNPROTECT(1);
+    return __sexp_result;
+END_RCPP
+}
+// jumpAutocorrelation
+arma::mat jumpAutocorrelation(SEXP lambda0, SEXP alpha, SEXP beta, SEXP tau, SEXP lag);
+RcppExport SEXP hawkes_jumpAutocorrelation(SEXP lambda0SEXP, SEXP alphaSEXP, SEXP betaSEXP, SEXP tauSEXP, SEXP lagSEXP) {
+BEGIN_RCPP
+    SEXP __sexp_result;
+    {
+        Rcpp::RNGScope __rngScope;
+        Rcpp::traits::input_parameter< SEXP >::type lambda0(lambda0SEXP );
+        Rcpp::traits::input_parameter< SEXP >::type alpha(alphaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type beta(betaSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type tau(tauSEXP );
+        Rcpp::traits::input_parameter< SEXP >::type lag(lagSEXP );
+        arma::mat __result = jumpAutocorrelation(lambda0, alpha, beta, tau, lag);
         PROTECT(__sexp_result = Rcpp::wrap(__result));
     }
     UNPROTECT(1);

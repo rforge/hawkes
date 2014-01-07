@@ -1,5 +1,5 @@
-\name{SimulateHawkes}
-\alias{SimulateHawkes}
+\name{simulateHawkes}
+\alias{simulateHawkes}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Hawkes process simulation Function
@@ -8,17 +8,17 @@ Hawkes process simulation Function
 The function simulates a Hawkes process for the given parameter, and until a time horizon.
 }
 \usage{
-SimulateHawkes(lambda0, alpha, beta, horizon)
+simulateHawkes(lambda0, alpha, beta, horizon)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{lambda0}{Vector of initial intensity, a scalar in the monovariate case.}
   \item{alpha}{Matrix of excitation, a scalar in the monovariate case. Excitation values are all positive.}
-  \item{beta}{Vector of betas, a scalar in the monovariate case. Notice that in the scalar case, one must have beta>alpha for the process to be stable, and in the multivariate case, the matrix (diag(beta)-alpha) must have eigen values with strictly positive real parts for the process to be stable.}
+  \item{beta}{Vector of betas, a scalar in the monovariate case.}
   \item{horizon}{Time horizon until which the simulation is to be conducted.}
 }
 \details{
-%%  ~~ If necessary, more details than the description above ~~
+Notice that in the scalar case, one must have beta>alpha for the process to be stable, and in the multivariate case, the matrix (diag(beta)-alpha) must have eigen values with strictly positive real parts for the process to be stable.
 }
 \value{
 Returns a vector of jump times in the monovariate case, and a list of such vectors for every component in the multivariate case.
@@ -51,14 +51,14 @@ lambda0<-0.02
 alpha<-0.05
 beta<-0.06
 horizon<-3600#one hour
-h<-SimulateHawkes(lambda0,alpha,beta,horizon)
+h<-simulateHawkes(lambda0,alpha,beta,horizon)
 
 #Multivariate Hawkes process
 lambda0<-c(0.02,0.02)
 alpha<-matrix(c(0.05,0,0,0.05),byrow=TRUE,nrow=2)
 beta<-c(0.06,0.06)
 horizon<-3600#one hour
-h<-SimulateHawkes(lambda0,alpha,beta,horizon)
+h<-simulateHawkes(lambda0,alpha,beta,horizon)
 }
 % Add one or more standard keywords, see file 'KEYWORDS' in the
 % R documentation directory.

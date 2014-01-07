@@ -1,11 +1,15 @@
+#include "hawkes_utils.h"
 #include <RcppArmadillo.h>
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
 
 
+int getDimension(SEXP lambda0){
+  Rcpp::NumericVector lambda0_internal(lambda0);  
+  return lambda0_internal.size();
+}
 
-
-int Attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
+int attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 {
   int index = 0;
 	double cumul = m_lambda[0];
@@ -18,10 +22,9 @@ int Attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 }
 
 // [[Rcpp::export]]
-std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP horizon)
+std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP horizon)
 {
-  Rcpp::NumericVector lambda0_internal(lambda0);  
-  int dimension = lambda0_internal.size();
+  int dimension = getDimension(lambda0);
   double m_horizon = as<double>(horizon);
   
   std::vector<std::vector<double> > history;
@@ -75,7 +78,7 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   }
   else{
     arma::mat dlambda(dimension,dimension);
-    
+    Rcpp::NumericVector lambda0_internal(lambda0);
     Rcpp::NumericMatrix alpha_internal(alpha);
     Rcpp::NumericVector beta_internal(beta);
     
@@ -86,12 +89,14 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     arma::vec m_lambda(dimension);
     
     
-    /*arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
+    /* TODO : uncomment this when the new Rcpp Armadillo will be integrated
+    arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
     arma::cx_vec eigval=arma::eig_gen(beta_minus_alpha);
     arma::vec eigval_real=real(eigval);
     if(eigval_real.min()<0){
       stop("Unstable. beta - alpha must have eigenvalues with strictly positive real part.");
     }*/
+    
   	double lambda_star = 0.0;
   	
   	double t=0;
@@ -109,7 +114,7 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	if (s <= m_horizon)
   	{
   		double D = arma::randu(1)[0];
-  		int n0 = Attribute(D, 0, lambda_star,m_lambda);
+  		int n0 = attribute(D, 0, lambda_star,m_lambda);
   		history[n0].push_back(s);
   
   		for (int i=0;i<dimension;i++)
@@ -149,7 +154,7 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   			}
   			if (D <= (I_M / lambda_star))
   			{
-  				int n0 = Attribute(D, s, lambda_star,m_lambda);
+  				int n0 = attribute(D, s, lambda_star,m_lambda);
   				history[n0].push_back(s);
   				lambda_star=0.0;
   				for (int i=0;i<dimension;i++)
@@ -182,7 +187,144 @@ std::vector<std::vector<double> > SimulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   }
 }
 
-
+// [[Rcpp::export]]
+std::vector<double>  jumpMean(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
+{
+  int dimension = getDimension(lambda0);
+  double m_tau = as<double>(tau);
+  
+  std::vector<double> res;
+  
+  if (dimension == 1)
+  {
+    double m_lambda0 = as<double>(lambda0);
+    double m_alpha = as<double>(alpha);
+    double m_beta = as<double>(beta);
+    if(m_beta<m_alpha){
+      stop("Unstable. You must have alpha < beta");
+    }
+    double lambda = m_beta*m_lambda0/(m_beta-m_alpha);
+    res.push_back(lambda*m_tau); 
+    return res;
+  }else{
+    arma::mat dlambda(dimension,dimension);
+    Rcpp::NumericVector lambda0_internal(lambda0);
+    Rcpp::NumericMatrix alpha_internal(alpha);
+    Rcpp::NumericVector beta_internal(beta);
+    
+    arma::vec m_lambda0(lambda0_internal.begin(),dimension,false);
+    arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
+    arma::vec m_beta(beta_internal.begin(),dimension,false);
+    arma::mat m_beta_matrix = diagmat(m_beta);
+    arma::vec m_lambda(dimension);
+    arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
+    arma::mat matrixBetaMinusAlpha_inv = inv(beta_minus_alpha);
+    arma::mat temp = matrixBetaMinusAlpha_inv*m_beta_matrix;
+	  arma::vec means = temp*m_lambda0;
+	  means = means*m_tau;
+    for(int i=0;i<dimension;i++){
+      res.push_back(means[i]);
+    }
+	  return res;
+  }
+}
+// [[Rcpp::export]]
+arma::mat jumpVariance(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
+{
+  int dimension = getDimension(lambda0);
+  double m_tau = as<double>(tau);
+  
+  arma::mat res = arma::zeros(dimension,dimension);
+  
+  if (dimension == 1)
+  {
+    double m_lambda0 = as<double>(lambda0);
+    double m_alpha = as<double>(alpha);
+    double m_beta = as<double>(beta);
+    if(m_beta<m_alpha){
+      stop("Unstable. You must have alpha < beta");
+    }
+    double gamma = m_lambda0/(1-m_alpha/m_beta);
+    double kappa = 1./(1.-m_alpha/m_beta);
+    double v=gamma*(m_tau*kappa*kappa+(1-kappa*kappa)*(1-exp(-(m_beta-m_alpha)*m_tau))/(m_beta-m_alpha));
+    res(0,0)= v; 
+    return res;
+  }else{
+    arma::mat dlambda(dimension,dimension);
+    Rcpp::NumericVector lambda0_internal(lambda0);
+    Rcpp::NumericMatrix alpha_internal(alpha);
+    Rcpp::NumericVector beta_internal(beta);
+    
+    arma::vec m_lambda0(lambda0_internal.begin(),dimension,false);
+    arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
+    arma::vec m_beta(beta_internal.begin(),dimension,false);
+    arma::mat m_beta_matrix = diagmat(m_beta);
+    arma::vec m_lambda(dimension);
+    
+    arma::mat temp0 = computeC5(m_lambda0,m_alpha,m_beta,m_tau);
+    arma::vec tempVec = expectedStationaryLambda(m_lambda,m_alpha,m_beta,0);
+    arma::mat temp = grandLambdaInfini(m_lambda,m_alpha,m_beta,0)+(m_alpha*vectorToDiagonalMatrix(tempVec));
+    arma::mat J1 = temp0*temp;
+    arma::vec tempVec2 = expectedStationaryLambda(m_lambda,m_alpha,m_beta,m_tau);
+    res = J1+arma::trans(J1)+(vectorToDiagonalMatrix(tempVec2)*m_tau);
+  
+	  return res;
+  }
+}
+// [[Rcpp::export]]
+arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP lag)
+{
+  int dimension = getDimension(lambda0);
+  double m_tau = as<double>(tau);
+  double m_lag = as<double>(lag);
+  
+  arma::mat res = arma::zeros(dimension,dimension);
+  
+  if (dimension == 1)
+  {
+    
+    double m_alpha = as<double>(alpha);
+    double m_beta = as<double>(beta);
+    if(m_beta<m_alpha){
+      stop("Unstable. You must have alpha < beta");
+    }
+    double alpha2=m_alpha*m_alpha,beta2=m_beta*m_beta,beta3=beta2*m_beta;
+	  double delta = m_lag;
+	  double num = (exp(m_alpha* delta - m_beta* (delta + 
+     2 *m_tau))* pow((exp(m_alpha *m_tau) - 
+     exp(m_beta* m_tau)),2)* m_alpha *(m_alpha - 
+     2 *m_beta));
+   
+   double den =(2* (-alpha2 + 
+   exp((m_alpha - m_beta) *m_tau)* m_alpha *(m_alpha - 2* m_beta) + 
+   2 *m_alpha *m_beta + m_alpha* beta2* m_tau - beta3* m_tau));
+   
+    res(0,0)= num/den; 
+    return res;
+  }else{
+    arma::mat dlambda(dimension,dimension);
+    Rcpp::NumericVector lambda0_internal(lambda0);
+    Rcpp::NumericMatrix alpha_internal(alpha);
+    Rcpp::NumericVector beta_internal(beta);
+    
+    arma::vec m_lambda0(lambda0_internal.begin(),dimension,false);
+    arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
+    arma::vec m_beta(beta_internal.begin(),dimension,false);
+    arma::mat m_beta_matrix = diagmat(m_beta);
+    arma::vec m_lambda(dimension);
+    
+    arma::mat temp0 = computeC2(m_lambda0,m_alpha,m_beta,m_tau)*computeC0(m_lambda0,m_alpha,m_beta,m_lag);
+    temp0 = temp0*computeC2(m_lambda0,m_alpha,m_beta,m_tau);
+    arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta,0);
+    arma::mat temp = grandLambdaInfini(m_lambda,m_alpha,m_beta,0)+
+    (m_alpha*vectorToDiagonalMatrix(tempVec));
+    res = temp0*temp;
+  
+  
+  
+    return res;
+  }
+}
 
 /*
 library(Rcpp)
