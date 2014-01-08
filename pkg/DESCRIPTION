@@ -2,7 +2,7 @@ Package: hawkes
 Version: 0.0-1
 Date: 2014-01-08
 Title: hawkes
-Authors@R: c(person("Riadh", "Zaatour", role = c("aut", "cre"),email = "zaatour_riadh@yahoo.fr"))
+Author: Riadh Zaatour <zaatour_riadh@yahoo.fr>
 Maintainer: Riadh Zaatour <zaatour_riadh@yahoo.fr>
 Description: Hawkes process toolkit
 License: GPL (>= 2)
