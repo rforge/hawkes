@@ -320,10 +320,3 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
   }
 }
 
-/*
-library(Rcpp)
-compileAttributes('C:\\Users\\riadh\\Dropbox\\dev_R\\hawkes\\pkg\\')
-library(devtools)
-install(pkg='C:\\Users\\riadh\\Dropbox\\dev_R\\hawkes\\pkg')
-library(hawkes)
-*/

@@ -1,6 +1,6 @@
 \name{simulateHawkes}
 \alias{simulateHawkes}
-%- Also NEED an '\alias' for EACH other topic documented here.
+
 \title{
 Hawkes process simulation Function
 }
@@ -10,7 +10,7 @@ The function simulates a Hawkes process for the given parameter, and until a tim
 \usage{
 simulateHawkes(lambda0, alpha, beta, horizon)
 }
-%- maybe also 'usage' for other objects documented here.
+
 \arguments{
   \item{lambda0}{Vector of initial intensity, a scalar in the monovariate case.}
   \item{alpha}{Matrix of excitation, a scalar in the monovariate case. Excitation values are all positive.}
@@ -22,29 +22,14 @@ Notice that in the scalar case, one must have beta>alpha for the process to be s
 }
 \value{
 Returns a vector of jump times in the monovariate case, and a list of such vectors for every component in the multivariate case.
-%%  ~Describe the value returned
-%%  If it is a LIST, use
-%%  \item{comp1 }{Description of 'comp1'}
-%%  \item{comp2 }{Description of 'comp2'}
-%% ...
+
 }
 \references{
 Y. Ogata. (1981)
 On Lewis simulation method for point processes.
 \emph{IEEE Transactions on Information Theory}, \bold{31}
 }
-\author{
-%%  ~~who you are~~
-}
-\note{
-%%  ~~further notes~~
-}
 
-%% ~Make other sections like Warning with \section{Warning }{....} ~
-
-\seealso{
-%% ~~objects to See Also as \code{\link{help}}, ~~~
-}
 \examples{
 #One dimensional Hawkes process
 lambda0<-0.02
@@ -60,7 +45,3 @@ beta<-c(0.06,0.06)
 horizon<-3600#one hour
 h<-simulateHawkes(lambda0,alpha,beta,horizon)
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
-%\keyword{ hawkes }
-%\keyword{ simulation }
