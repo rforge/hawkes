@@ -43,9 +43,8 @@ arma::mat expm_pad(arma::mat& H, double t = 1.0, const int p = 6)
 					all_H_are_zero = false; 
 		if( all_H_are_zero == true ) return I;
 // Some error happens, H has elements which are NaN or infinity. 
-		std::cerr<<"Null input error in the template expm_pad.\n";
-		std::cout << "Null INPUT : " << H <<"\n";
-		exit(0);
+		stop("Null input error in the template expm_pad.");
+		
 	}
 // Scaling, seek s such that || H*2^(-s) || < 1/2, and set scale = 2^(-s)
  	int s = 0;
@@ -170,30 +169,31 @@ arma::mat solveLyapounov(arma::mat&A,arma::mat& Q)
 {
   //AX+XA'+Q=0
   arma::mat I = arma::eye(A.n_rows,A.n_rows);
-    
   arma::mat AA = arma::kron(I, A)+ arma::kron(A, I);
   arma::mat QQ = reshape(Q,Q.n_rows*Q.n_cols,1);
   arma::mat mQQ = QQ*(-1);
   arma::mat invAA = inv(AA);
   arma::mat resTemp = invAA*mQQ;
   arma::mat result = arma::zeros(A.n_rows,A.n_cols);
+  
   for (unsigned int i=0;i<A.n_rows;i++)
   {
       for (unsigned int j =0;j<A.n_cols;j++)
       {
-          result(i, j) = resTemp((j-1) * A.n_rows + i, 1);
+          result(i, j) = resTemp(j * A.n_rows + i, 0);
       }
   }
+  
   return (result);
 }
 arma::mat grandLambdaInfini(arma::vec& lambda,arma::mat& alpha,arma::mat& beta,double tau)
 {
   arma::vec tempVec = expectedStationaryLambda(lambda,alpha,beta,tau);
 	arma::mat temp = vectorToDiagonalMatrix(tempVec);
-
 	arma::mat temp2 = alpha*temp;
 	arma::mat Q = temp2*arma::trans(alpha);
 	arma::mat A = alpha- beta;
 	arma::mat res = solveLyapounov(A, Q);
+  
 	return (res);
 }

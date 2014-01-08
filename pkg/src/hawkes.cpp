@@ -207,7 +207,6 @@ std::vector<double>  jumpMean(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     res.push_back(lambda*m_tau); 
     return res;
   }else{
-    arma::mat dlambda(dimension,dimension);
     Rcpp::NumericVector lambda0_internal(lambda0);
     Rcpp::NumericMatrix alpha_internal(alpha);
     Rcpp::NumericVector beta_internal(beta);
@@ -216,7 +215,6 @@ std::vector<double>  jumpMean(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
-    arma::vec m_lambda(dimension);
     arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
     arma::mat matrixBetaMinusAlpha_inv = inv(beta_minus_alpha);
     arma::mat temp = matrixBetaMinusAlpha_inv*m_beta_matrix;
@@ -250,7 +248,6 @@ arma::mat jumpVariance(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     res(0,0)= v; 
     return res;
   }else{
-    arma::mat dlambda(dimension,dimension);
     Rcpp::NumericVector lambda0_internal(lambda0);
     Rcpp::NumericMatrix alpha_internal(alpha);
     Rcpp::NumericVector beta_internal(beta);
@@ -259,13 +256,12 @@ arma::mat jumpVariance(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
-    arma::vec m_lambda(dimension);
     
-    arma::mat temp0 = computeC5(m_lambda0,m_alpha,m_beta,m_tau);
-    arma::vec tempVec = expectedStationaryLambda(m_lambda,m_alpha,m_beta,0);
-    arma::mat temp = grandLambdaInfini(m_lambda,m_alpha,m_beta,0)+(m_alpha*vectorToDiagonalMatrix(tempVec));
+    arma::mat temp0 = computeC5(m_lambda0,m_alpha,m_beta_matrix,m_tau);
+    arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta_matrix,0);
+    arma::mat temp = grandLambdaInfini(m_lambda0,m_alpha,m_beta_matrix,0)+(m_alpha*vectorToDiagonalMatrix(tempVec));
     arma::mat J1 = temp0*temp;
-    arma::vec tempVec2 = expectedStationaryLambda(m_lambda,m_alpha,m_beta,m_tau);
+    arma::vec tempVec2 = expectedStationaryLambda(m_lambda0,m_alpha,m_beta_matrix,m_tau);
     res = J1+arma::trans(J1)+(vectorToDiagonalMatrix(tempVec2)*m_tau);
   
 	  return res;
@@ -302,7 +298,6 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
     res(0,0)= num/den; 
     return res;
   }else{
-    arma::mat dlambda(dimension,dimension);
     Rcpp::NumericVector lambda0_internal(lambda0);
     Rcpp::NumericMatrix alpha_internal(alpha);
     Rcpp::NumericVector beta_internal(beta);
@@ -311,12 +306,11 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
-    arma::vec m_lambda(dimension);
     
-    arma::mat temp0 = computeC2(m_lambda0,m_alpha,m_beta,m_tau)*computeC0(m_lambda0,m_alpha,m_beta,m_lag);
-    temp0 = temp0*computeC2(m_lambda0,m_alpha,m_beta,m_tau);
-    arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta,0);
-    arma::mat temp = grandLambdaInfini(m_lambda,m_alpha,m_beta,0)+
+    arma::mat temp0 = computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau)*computeC0(m_lambda0,m_alpha,m_beta_matrix,m_lag);
+    temp0 = temp0*computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau);
+    arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta_matrix,0);
+    arma::mat temp = grandLambdaInfini(m_lambda0,m_alpha,m_beta_matrix,0)+
     (m_alpha*vectorToDiagonalMatrix(tempVec));
     res = temp0*temp;
   
