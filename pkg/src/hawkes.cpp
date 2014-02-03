@@ -320,3 +320,137 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
   }
 }
 
+// [[Rcpp::export]]
+double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
+{
+  int dimension = getDimension(lambda0);
+  
+  
+  double res = 0;
+  
+  if (dimension == 1)
+  {
+    double m_lambda0 = as<double>(lambda0);
+    double m_alpha = as<double>(alpha);
+    double m_beta = as<double>(beta);
+    Rcpp::NumericVector m_history(history);
+    double m_T = m_history[m_history.size()-1];
+    
+    if(m_beta<m_alpha){
+      stop("Unstable. You must have alpha < beta");
+    }
+    double *A = new double[m_history.size()];
+    A[0] = 0;
+  	for (int i = 1; i < m_history.size(); i++)
+  	{
+  		A[i] = (1.0+A[i-1])*exp(-m_beta * (m_history[i] - m_history[i-1])) ;
+  	}
+
+  	double sum = 0.0;
+  	for (int i = 0; i < m_history.size(); i++)
+  	{
+  		sum = sum+   (1 - exp(-m_beta * (m_T - m_history[i]))) ;
+  	}
+  	sum = (m_alpha / m_beta) * sum;
+  	double integratedDensity = m_lambda0 * m_T + sum;
+  	res = - integratedDensity;
+  	
+  	for (int i = 0; i < m_history.size(); i++)
+  	{
+  		res = res + log(m_lambda0+m_alpha*A[i]);
+  	}
+  	delete [] A;
+	
+	  return (-res);
+  }else{
+    Rcpp::NumericVector lambda0_internal(lambda0);
+    Rcpp::NumericMatrix alpha_internal(alpha);
+    Rcpp::NumericVector beta_internal(beta);
+    arma::vec m_lambda0(lambda0_internal.begin(),dimension,false);
+    arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
+    arma::vec m_beta(beta_internal.begin(),dimension,false);
+    Rcpp::List m_history(history);
+    
+  
+    for (int m = 0; m < dimension; m++)
+  	{
+  		double sum = 0.0;
+      double m_T;
+      double *Rdiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
+    	double *RNonDiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
+	    int * index=new int[dimension];
+    	for (int n = 0; n < dimension; n++)
+    	{
+    		index[n] = 0;
+        m_T = std::max(as<Rcpp::NumericVector>(m_history[n])[as<Rcpp::NumericVector>(m_history[m]).size()-1],m_T);
+    	}
+    	Rdiag[0] = 0;
+    	RNonDiag[0] = 0;
+    	for (int i = 1; i <as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	{
+    		Rdiag[i] = (1.0+Rdiag[i-1])*exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] -as<Rcpp::NumericVector>(m_history[m])[i-1])) ;
+    	}
+    	for (int i = 1; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	{
+    		RNonDiag[i] = (RNonDiag[i-1])*exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] - as<Rcpp::NumericVector>(m_history[m])[i-1])) ;
+    		for (int n = 0; n < dimension; n++)
+    		{
+    			if (m==n)
+    			{
+    				continue;
+    			}
+    			for (int k = index[n]; k < as<Rcpp::NumericVector>(m_history[n]).size(); k++)
+    			{
+    				if (as<Rcpp::NumericVector>(m_history[n])[k] >= as<Rcpp::NumericVector>(m_history[m])[i-1])
+    				{
+    					if (as<Rcpp::NumericVector>(m_history[n])[k] < as<Rcpp::NumericVector>(m_history[m])[i])
+    					{
+    						RNonDiag[i] += exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] - as<Rcpp::NumericVector>(m_history[n])[k]));
+    					}
+    					else
+    					{
+    						index[n] = k;
+    						break;
+    					}
+    				}
+    			}
+    		}
+    	}
+    	for (int n = 0; n < dimension; n++)
+    	{
+    		for (int k = 0; k < as<Rcpp::NumericVector>(m_history[n]).size(); k++)
+    		{
+    			sum = sum + (m_alpha(m,n) / m_beta(m)) *
+    				(1-exp(-m_beta(m) * (m_T - as<Rcpp::NumericVector>(m_history[n])[k])));//Beta diagonal
+    
+    		}
+    	}
+
+  	  double res =  - m_lambda0(m) * m_T - sum;
+  
+  
+    	for (int i = 0; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	{
+    		sum = m_lambda0(m);
+    		for (int n = 0; n < dimension; n++)		
+    		{
+    
+    			if(m==n)
+    			{
+    				sum = sum+m_alpha(m,n)*Rdiag[i];
+    			}
+    			else
+    			{
+    				sum = sum +m_alpha(m,n)*RNonDiag[i];
+    			}
+    		}
+    		res = res+log(sum);
+    	}
+    	delete[] Rdiag;
+    	delete[] RNonDiag;
+    	delete[] index;
+    }
+   
+	  return res;
+  }
+}
