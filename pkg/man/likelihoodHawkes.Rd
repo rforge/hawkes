@@ -34,7 +34,7 @@ lambda0<-0.02
 alpha<-0.05
 beta<-0.06
 history<-simulateHawkes(lambda0,alpha,beta,3600)
-l<-likelihoodHawkes(lambda0,alpha,beta,history)
+l<-likelihoodHawkes(lambda0,alpha,beta,history[[1]])
 
 #Multivariate Hawkes process
 lambda0<-c(0.02,0.02)
