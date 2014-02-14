@@ -3,7 +3,7 @@
 // [[Rcpp::depends(RcppArmadillo)]]
 using namespace Rcpp;
  
-
+ 
 int getDimension(SEXP lambda0){
   Rcpp::NumericVector lambda0_internal(lambda0);  
   return lambda0_internal.size();
