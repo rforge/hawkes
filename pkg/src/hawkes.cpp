@@ -8,7 +8,7 @@ int getDimension(SEXP lambda0){
   Rcpp::NumericVector lambda0_internal(lambda0);  
   return lambda0_internal.size();
 }
-
+ 
 int attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 {
   int index = 0;
