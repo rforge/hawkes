@@ -1,7 +1,7 @@
 Package: hawkes
 Version: 0.0-1
 Date: 2014-01-08
-Title: hawkes process simulation and calibration toolkit
+Title: Hawkes process simulation and calibration toolkit
 Author: Riadh Zaatour <zaatour_riadh@yahoo.fr>
 Maintainer: Riadh Zaatour <zaatour_riadh@yahoo.fr>
 Description: The package allows to simulate Hawkes process both in monovariate and multivariate settings. It gives functions to compute different moments of the number of jumps of the process on a given interval, such as mean, variance or autocorrelation of process jumps on time intervals separated by a lag.
