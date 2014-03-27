@@ -89,13 +89,13 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     arma::vec m_lambda(dimension);
     
     
-    /* TODO : uncomment this when the new Rcpp Armadillo will be integrated
+    
     arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
     arma::cx_vec eigval=arma::eig_gen(beta_minus_alpha);
     arma::vec eigval_real=real(eigval);
     if(eigval_real.min()<0){
       stop("Unstable. beta - alpha must have eigenvalues with strictly positive real part.");
-    }*/
+    }
     
   	double lambda_star = 0.0;
   	
