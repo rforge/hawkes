@@ -134,7 +134,7 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	{
   		lambda_star = lambda_star + m_lambda[i];
   	}
-  	while (TRUE)
+  	while (true)
   	{
   		U = arma::randu(1)[0];
   		s = s - (1.0 / lambda_star) * log(U);
