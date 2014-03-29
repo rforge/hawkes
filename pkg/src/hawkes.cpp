@@ -9,14 +9,14 @@ int getDimension(SEXP lambda0){
   return lambda0_internal.size();
 }
  
-int attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
+int attribute(double alea, double I_star,const arma::vec& m_lambda)
 {
   int index = 0;
-	double cumul = m_lambda[0];
+	double cumul = m_lambda(0);
 	while (alea > (cumul / I_star))
 	{
 		index = index + 1;
-		cumul = cumul + m_lambda[index];
+		cumul = cumul + m_lambda(index);
 	}
 	return (index);
 }
@@ -25,7 +25,7 @@ int attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP horizon)
 {
   RNGScope scope;
-  Rcpp::NumericVector tempUnif;
+  Rcpp::NumericVector tempUnif(1);
   
   int dimension = getDimension(lambda0);
   double m_horizon = as<double>(horizon);
@@ -49,7 +49,7 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
 	  double dlambda = 0.0,t=0;
 	  //first event
     tempUnif = runif(1);
-	  double U = tempUnif[0];
+	  double U = tempUnif(0);
 	  double s = -(1.0 / lambda_star) * log(U);
 	  if (s <= m_horizon)
 	  {
@@ -66,14 +66,14 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	{
   		lambda_star = m_lambda0+dlambda*exp(-m_beta*(s-t));
       tempUnif = runif(1);
-  		U = tempUnif[0];
+  		U = tempUnif(0);
   		s = s - (1.0 / lambda_star) * log(U);
   		if (s > m_horizon)
   		{
   			return (history);
   		}
       tempUnif = runif(1);
-  		double D = tempUnif[0];
+  		double D = tempUnif(0);
   		if (D <= (m_lambda0+dlambda*exp(-m_beta*(s-t))) / lambda_star)
   		{
   			history[0].push_back(s);
@@ -83,7 +83,7 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	}
   }
   else{
-    arma::mat dlambda(dimension,dimension);
+    arma::mat dlambda(dimension,dimension,arma::fill::zeros);
     Rcpp::NumericVector lambda0_internal(lambda0);
     Rcpp::NumericMatrix alpha_internal(alpha);
     Rcpp::NumericVector beta_internal(beta);
@@ -104,31 +104,31 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     }
     
   	double lambda_star = 0.0;
-  	
+	  
   	double t=0;
   	for (int i = 0; i < dimension; i++)
   	{
-  		lambda_star += m_lambda0[i];
-  		m_lambda[i] = m_lambda0[i];
+  		lambda_star += m_lambda0(i);
+  		m_lambda(i) = m_lambda0(i);
   	}
     
   	//first event
     tempUnif = runif(1);
-  	double U = tempUnif[0];
+  	double U = tempUnif(0);
   	double s = -(1.0 / lambda_star) * log(U);
     
     
   	if (s <= m_horizon)
   	{
-      tempUnif = runif(1);
-  		double D = tempUnif[0];
-  		int n0 = attribute(D, 0, lambda_star,m_lambda);
+        tempUnif = runif(1);
+  		double D = tempUnif(0);
+  		int n0 = attribute(D, lambda_star,m_lambda);
   		history[n0].push_back(s);
   
   		for (int i=0;i<dimension;i++)
   		{
   			dlambda(i,n0) = m_alpha(i,n0);
-  			m_lambda[i] = m_lambda0[i]+m_alpha(i,n0);
+  			m_lambda(i) = m_lambda0(i)+m_alpha(i,n0);
   		}
   	}
   	else
@@ -140,17 +140,17 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	lambda_star = 0;
   	for (int i = 0; i < dimension; i++)
   	{
-  		lambda_star = lambda_star + m_lambda[i];
+  		lambda_star = lambda_star + m_lambda(i);
   	}
   	while (true)
   	{
-      tempUnif = runif(1);
-  		U = tempUnif[0];
+        tempUnif = runif(1);
+  		U = tempUnif(0);
   		s = s - (1.0 / lambda_star) * log(U);
   		if (s <= m_horizon)
   		{
-        tempUnif = runif(1);
-  			double D = tempUnif[0];
+            tempUnif = runif(1);
+  			double D = tempUnif(0);
   			double I_M = 0.0;
   			for (int i = 0; i < dimension; i++)
   			{
@@ -159,12 +159,12 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   				{
   					dl += dlambda(i,j)*exp(-m_beta(i)*(s-t));
   				}
-  				m_lambda[i] = m_lambda0[i]+dl;
-  				I_M = I_M + m_lambda[i];
+  				m_lambda[i] = m_lambda0(i)+dl;
+  				I_M = I_M + m_lambda(i);
   			}
   			if (D <= (I_M / lambda_star))
   			{
-  				int n0 = attribute(D, s, lambda_star,m_lambda);
+  				int n0 = attribute(D, lambda_star,m_lambda);
   				history[n0].push_back(s);
   				lambda_star=0.0;
   				for (int i=0;i<dimension;i++)
@@ -179,7 +179,7 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   						}
   						dl +=dlambda(i,j);
   					}
-  					lambda_star+= m_lambda0[i]+dl;
+  					lambda_star+= m_lambda0(i)+dl;
   				}
   				t=s;
   			}
@@ -461,6 +461,6 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     	delete[] index;
     }
    
-	  return res;
+	  return (-res);
   }
 }
