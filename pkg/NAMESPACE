@@ -1,3 +1,5 @@
+## package has a dynamic library
+useDynLib(hawkes)
 ## imports
 ##import( Rcpp )
 ##import( RcppArmadillo )
@@ -7,5 +9,3 @@
 ## and some exported functions
 exportPattern("^[[:alpha:]]+")
 #exportPattern("^[[:alnum:]%\\[0-9$<-]+")
-## package has a dynamic library
-useDynLib(hawkes)
