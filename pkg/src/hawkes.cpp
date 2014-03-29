@@ -24,6 +24,9 @@ int attribute(double alea, double t, double I_star,const arma::vec& m_lambda)
 // [[Rcpp::export]]
 std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP horizon)
 {
+  RNGScope scope;
+  Rcpp::NumericVector tempUnif;
+  
   int dimension = getDimension(lambda0);
   double m_horizon = as<double>(horizon);
   
@@ -45,7 +48,8 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     double lambda_star = m_lambda0;
 	  double dlambda = 0.0,t=0;
 	  //first event
-	  double U = arma::randu(1)[0];
+    tempUnif = runif(1);
+	  double U = tempUnif[0];
 	  double s = -(1.0 / lambda_star) * log(U);
 	  if (s <= m_horizon)
 	  {
@@ -61,13 +65,15 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	while (true)
   	{
   		lambda_star = m_lambda0+dlambda*exp(-m_beta*(s-t));
-  		U = arma::randu(1)[0];
+      tempUnif = runif(1);
+  		U = tempUnif[0];
   		s = s - (1.0 / lambda_star) * log(U);
   		if (s > m_horizon)
   		{
   			return (history);
   		}
-  		double D = arma::randu(1)[0];
+      tempUnif = runif(1);
+  		double D = tempUnif[0];
   		if (D <= (m_lambda0+dlambda*exp(-m_beta*(s-t))) / lambda_star)
   		{
   			history[0].push_back(s);
@@ -107,13 +113,15 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	}
     
   	//first event
-  	double U = arma::randu(1)[0];
+    tempUnif = runif(1);
+  	double U = tempUnif[0];
   	double s = -(1.0 / lambda_star) * log(U);
     
     
   	if (s <= m_horizon)
   	{
-  		double D = arma::randu(1)[0];
+      tempUnif = runif(1);
+  		double D = tempUnif[0];
   		int n0 = attribute(D, 0, lambda_star,m_lambda);
   		history[n0].push_back(s);
   
@@ -136,11 +144,13 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
   	}
   	while (true)
   	{
-  		U = arma::randu(1)[0];
+      tempUnif = runif(1);
+  		U = tempUnif[0];
   		s = s - (1.0 / lambda_star) * log(U);
   		if (s <= m_horizon)
   		{
-  			double D = arma::randu(1)[0];
+        tempUnif = runif(1);
+  			double D = tempUnif[0];
   			double I_M = 0.0;
   			for (int i = 0; i < dimension; i++)
   			{
