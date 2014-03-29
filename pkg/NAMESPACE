@@ -1,8 +1,8 @@
 ## package has a dynamic library
 useDynLib(hawkes)
-## imports
-##import( Rcpp )
-##import( RcppArmadillo )
+import(Rcpp)
+import(RcppArmadillo)
+
 
 
 
