@@ -362,8 +362,8 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
   		sum = sum+   (1 - exp(-m_beta * (m_T - m_history[i]))) ;
   	}
   	sum = (m_alpha / m_beta) * sum;
-  	double integratedDensity = m_lambda0 * m_T + sum;
-  	res = - integratedDensity;
+  	res = - m_lambda0 * m_T - sum;
+  	
   	
   	for (int i = 0; i < m_history.size(); i++)
   	{
@@ -381,18 +381,22 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     Rcpp::List m_history(history);
     
-  
+    double m_T = 0;
+    for (int n = 0; n < dimension; n++)
+    {
+  	  m_T = std::max(as<Rcpp::NumericVector>(m_history[n])[as<Rcpp::NumericVector>(m_history[n]).size()-1],m_T);
+  	}
+    
     for (int m = 0; m < dimension; m++)
   	{
   		double sum = 0.0;
-      double m_T;
+     
       double *Rdiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
     	double *RNonDiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
 	    int * index=new int[dimension];
     	for (int n = 0; n < dimension; n++)
     	{
     		index[n] = 0;
-        m_T = std::max(as<Rcpp::NumericVector>(m_history[n])[as<Rcpp::NumericVector>(m_history[m]).size()-1],m_T);
     	}
     	Rdiag[0] = 0;
     	RNonDiag[0] = 0;
@@ -436,7 +440,7 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     		}
     	}
 
-  	  double res =  - m_lambda0(m) * m_T - sum;
+  	  res =  - m_lambda0(m) * m_T - sum;
   
   
     	for (int i = 0; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
