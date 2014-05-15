@@ -316,6 +316,7 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
+    arma::mat variance = jumpVariance(lambda0,alpha,beta,tau);
     
     arma::mat temp0 = computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau)*computeC0(m_lambda0,m_alpha,m_beta_matrix,m_lag);
     temp0 = temp0*computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau);
@@ -323,7 +324,11 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
     arma::mat temp = grandLambdaInfini(m_lambda0,m_alpha,m_beta_matrix,0)+
     (m_alpha*vectorToDiagonalMatrix(tempVec));
     res = temp0*temp;
-  
+    for (int i = 0; i < dimension; i++){
+        for (int j = 0; j < dimension; j++){
+            res(i,j)=res(i,j)/sqrt(variance(i,i)*variance(j,j));
+        }
+    }
   
   
     return res;
@@ -440,7 +445,7 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     		}
     	}
 
-  	  res =  - m_lambda0(m) * m_T - sum;
+  	  res = res - m_lambda0(m) * m_T - sum;
   
   
     	for (int i = 0; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
