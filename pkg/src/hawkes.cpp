@@ -96,12 +96,7 @@ std::vector<std::vector<double> > simulateHawkes(SEXP lambda0,SEXP alpha,SEXP be
     
     
     
-    arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
-    arma::cx_vec eigval=arma::eig_gen(beta_minus_alpha);
-    arma::vec eigval_real=real(eigval);
-    if(eigval_real.min()<0){
-      stop("Unstable. beta - alpha must have eigenvalues with strictly positive real part.");
-    }
+    checkStability(m_beta_matrix,m_alpha);
     
   	double lambda_star = 0.0;
 	  
@@ -225,6 +220,9 @@ std::vector<double>  jumpMean(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
+    
+    checkStability(m_beta_matrix,m_alpha);
+    
     arma::mat beta_minus_alpha = m_beta_matrix- m_alpha;
     arma::mat matrixBetaMinusAlpha_inv = inv(beta_minus_alpha);
     arma::mat temp = matrixBetaMinusAlpha_inv*m_beta_matrix;
@@ -266,6 +264,8 @@ arma::mat jumpVariance(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau)
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
+    
+    checkStability(m_beta_matrix,m_alpha);
     
     arma::mat temp0 = computeC5(m_lambda0,m_alpha,m_beta_matrix,m_tau);
     arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta_matrix,0);
@@ -316,8 +316,12 @@ arma::mat jumpAutocorrelation(SEXP lambda0,SEXP alpha,SEXP beta,SEXP tau,SEXP la
     arma::mat m_alpha(alpha_internal.begin(),dimension,dimension,false);
     arma::vec m_beta(beta_internal.begin(),dimension,false);
     arma::mat m_beta_matrix = diagmat(m_beta);
-    arma::mat variance = jumpVariance(lambda0,alpha,beta,tau);
     
+    checkStability(m_beta_matrix,m_alpha);
+    
+    arma::mat variance = jumpVariance(lambda0,alpha,beta,tau);
+   
+     
     arma::mat temp0 = computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau)*computeC0(m_lambda0,m_alpha,m_beta_matrix,m_lag);
     temp0 = temp0*computeC2(m_lambda0,m_alpha,m_beta_matrix,m_tau);
     arma::vec tempVec = expectedStationaryLambda(m_lambda0,m_alpha,m_beta_matrix,0);
