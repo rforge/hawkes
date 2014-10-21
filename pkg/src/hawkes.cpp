@@ -391,17 +391,21 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     Rcpp::List m_history(history);
     
     double m_T = 0;
+    int *sizes = new int[dimension];
+    Rcpp::NumericVector *vectors = new Rcpp::NumericVector[dimension];
     for (int n = 0; n < dimension; n++)
     {
-  	  m_T = std::max(as<Rcpp::NumericVector>(m_history[n])[as<Rcpp::NumericVector>(m_history[n]).size()-1],m_T);
+      vectors[n] = as<Rcpp::NumericVector>(m_history[n]);
+      sizes[n] = vectors[n].size();
+  	  m_T = std::max(vectors[n][sizes[n]-1],m_T);
   	}
     
     for (int m = 0; m < dimension; m++)
   	{
   		double sum = 0.0;
      
-      double *Rdiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
-    	double *RNonDiag = new double[as<Rcpp::NumericVector>(m_history[m]).size()];
+      double *Rdiag = new double[sizes[m]];
+    	double *RNonDiag = new double[sizes[m]];
 	    int * index=new int[dimension];
     	for (int n = 0; n < dimension; n++)
     	{
@@ -409,26 +413,26 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     	}
     	Rdiag[0] = 0;
     	RNonDiag[0] = 0;
-    	for (int i = 1; i <as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	for (int i = 1; i < sizes[m]; i++)
     	{
-    		Rdiag[i] = (1.0+Rdiag[i-1])*exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] -as<Rcpp::NumericVector>(m_history[m])[i-1])) ;
+    		Rdiag[i] = (1.0+Rdiag[i-1])*exp(-m_beta(m) * (vectors[m][i] - vectors[m][i-1])) ;
     	}
-    	for (int i = 1; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	for (int i = 1; i < sizes[m]; i++)
     	{
-    		RNonDiag[i] = (RNonDiag[i-1])*exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] - as<Rcpp::NumericVector>(m_history[m])[i-1])) ;
+    		RNonDiag[i] = (RNonDiag[i-1])*exp(-m_beta(m) * (vectors[m][i] - vectors[m][i-1])) ;
     		for (int n = 0; n < dimension; n++)
     		{
     			if (m==n)
     			{
     				continue;
     			}
-    			for (int k = index[n]; k < as<Rcpp::NumericVector>(m_history[n]).size(); k++)
+    			for (int k = index[n]; k < sizes[n]; k++)
     			{
-    				if (as<Rcpp::NumericVector>(m_history[n])[k] >= as<Rcpp::NumericVector>(m_history[m])[i-1])
+    				if (vectors[n][k] >= vectors[m][i-1])
     				{
-    					if (as<Rcpp::NumericVector>(m_history[n])[k] < as<Rcpp::NumericVector>(m_history[m])[i])
+    					if (vectors[n][k] < vectors[m][i])
     					{
-    						RNonDiag[i] += exp(-m_beta(m) * (as<Rcpp::NumericVector>(m_history[m])[i] - as<Rcpp::NumericVector>(m_history[n])[k]));
+    						RNonDiag[i] += exp(-m_beta(m) * (vectors[m][i] - vectors[n][k]));
     					}
     					else
     					{
@@ -441,10 +445,10 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     	}
     	for (int n = 0; n < dimension; n++)
     	{
-    		for (int k = 0; k < as<Rcpp::NumericVector>(m_history[n]).size(); k++)
+    		for (int k = 0; k < sizes[n]; k++)
     		{
     			sum = sum + (m_alpha(m,n) / m_beta(m)) *
-    				(1-exp(-m_beta(m) * (m_T - as<Rcpp::NumericVector>(m_history[n])[k])));//Beta diagonal
+    				(1-exp(-m_beta(m) * (m_T - vectors[n][k])));//Beta diagonal
     
     		}
     	}
@@ -452,7 +456,7 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
   	  res = res - m_lambda0(m) * m_T - sum;
   
   
-    	for (int i = 0; i < as<Rcpp::NumericVector>(m_history[m]).size(); i++)
+    	for (int i = 0; i < sizes[m]; i++)
     	{
     		sum = m_lambda0(m);
     		for (int n = 0; n < dimension; n++)		
@@ -473,6 +477,8 @@ double  likelihoodHawkes(SEXP lambda0,SEXP alpha,SEXP beta,SEXP history)
     	delete[] RNonDiag;
     	delete[] index;
     }
+    delete[] sizes;
+    delete[] vectors;
    
 	  return (-res);
   }
